@@ -3,6 +3,7 @@ package pub.developers.forum.infrastructure.cache;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @desc
  **/
 @Service
+@ConditionalOnProperty(name = "cache.type", havingValue = "db", matchIfMissing = true)
 public class DbCacheServiceImpl implements CacheService {
 
     @Resource
