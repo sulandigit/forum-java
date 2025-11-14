@@ -65,6 +65,28 @@
         )
     </insert>
 
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO <include refid="table_name"/>
+        (channel, type, `read`, sender_type, sender, receiver_type, receiver, title, content_type, content, create_at, update_at)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+        #{item.channel},
+        #{item.type},
+        #{item.read},
+        #{item.senderType},
+        #{item.sender},
+        #{item.receiverType},
+        #{item.receiver},
+        #{item.title},
+        #{item.contentType},
+        #{item.content},
+        #{item.createAt},
+        #{item.updateAt}
+        )
+        </foreach>
+    </insert>
+
     <select id="get" resultMap="resultMap">
         SELECT <include refid="all_column"/>
         FROM <include refid="table_name"/>

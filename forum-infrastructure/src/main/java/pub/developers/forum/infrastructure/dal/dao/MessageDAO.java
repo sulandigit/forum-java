@@ -14,6 +14,12 @@ public interface MessageDAO {
 
     void insert(MessageDO messageDO);
 
+    /**
+     * 批量插入消息
+     * @param messageDOs 消息列表
+     */
+    void batchInsert(@Param("list") List<MessageDO> messageDOs);
+
     MessageDO get(Long id);
 
     List<MessageDO> query(MessageDO messageDO);

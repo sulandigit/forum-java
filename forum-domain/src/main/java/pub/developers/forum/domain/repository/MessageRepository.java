@@ -16,6 +16,12 @@ public interface MessageRepository {
 
     void save(Message message);
 
+    /**
+     * 批量保存消息
+     * @param messages 消息列表
+     */
+    void batchSave(List<Message> messages);
+
     Message get(Long id);
 
     PageResult<Message> page(PageRequest<Message> pageRequest);

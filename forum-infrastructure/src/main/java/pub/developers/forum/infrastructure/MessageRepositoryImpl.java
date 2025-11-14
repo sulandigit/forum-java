@@ -57,6 +57,45 @@ public class MessageRepositoryImpl implements MessageRepository {
     }
 
     @Override
+    public void batchSave(List<Message> messages) {
+        if (ObjectUtils.isEmpty(messages)) {
+            return;
+        }
+
+        // 过滤掉发送人和接收人相同的消息
+        List<MessageDO> messageDOs = new ArrayList<>();
+        for (Message message : messages) {
+            String receiver = message.getReceiver().getId();
+            String sender = message.getSender().getId();
+            if (receiver.equals(sender)) {
+                continue;
+            }
+
+            MessageDO messageDO = MessageDO.builder()
+                    .channel(message.getChannel().getValue())
+                    .type(message.getType().getValue())
+                    .read(message.getRead().getValue())
+                    .sender(sender)
+                    .senderType(message.getSender().getType().getValue())
+                    .receiver(receiver)
+                    .receiverType(message.getReceiver().getType().getValue())
+                    .title(message.getTitle())
+                    .content(message.getContent())
+                    .contentType(message.getContentType().getValue())
+                    .build();
+            messageDO.initBase();
+            messageDOs.add(messageDO);
+        }
+
+        if (ObjectUtils.isEmpty(messageDOs)) {
+            return;
+        }
+
+        // 批量插入
+        messageDAO.batchInsert(messageDOs);
+    }
+
+    @Override
     public Message get(Long id) {
         return MessageTransfer.toMessage(messageDAO.get(id));
     }
