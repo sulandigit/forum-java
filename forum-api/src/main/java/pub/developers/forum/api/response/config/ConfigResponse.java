@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 配置响应类
- * 用于返回系统配置信息的响应对象
+ * Configuration Response
+ * Response object for returning system configuration information
  *
  * @author Qiangqiang.Bian
  * @create 2020/12/26
@@ -24,52 +24,52 @@ public class ConfigResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 配置ID
+     * Configuration ID
      */
     private Long id;
 
     /**
-     * 配置状态
+     * Configuration state
      */
     private String state;
 
     /**
-     * 配置类型
+     * Configuration type
      */
     private String type;
 
     /**
-     * 配置名称
+     * Configuration name
      */
     private String name;
 
     /**
-     * 配置内容
+     * Configuration content
      */
     private String content;
 
     /**
-     * 生效开始时间
+     * Effective start time
      */
     private Date startAt;
 
     /**
-     * 生效结束时间
+     * Effective end time
      */
     private Date endAt;
 
     /**
-     * 创建人ID
+     * Creator user ID
      */
     private Long creator;
 
     /**
-     * 创建时间
+     * Creation time
      */
     private Date createAt;
 
     /**
-     * 更新时间
+     * Update time
      */
     private Date updateAt;
 
