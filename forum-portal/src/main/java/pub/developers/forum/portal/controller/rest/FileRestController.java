@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import pub.developers.forum.api.model.ResultModel;
 import pub.developers.forum.api.request.file.FileUploadImgRequest;
 import pub.developers.forum.api.service.FileApiService;
+import pub.developers.forum.app.validator.FileSizeValidator;
+import pub.developers.forum.app.validator.FileTypeValidator;
 import pub.developers.forum.common.constant.Constant;
 import pub.developers.forum.common.enums.ErrorCodeEn;
 import pub.developers.forum.common.support.CheckUtil;
@@ -34,6 +36,12 @@ public class FileRestController {
 
     @Resource
     private FileApiService fileApiService;
+
+    @Resource
+    private FileSizeValidator fileSizeValidator;
+
+    @Resource
+    private FileTypeValidator fileTypeValidator;
 
     // .css;.js;.png;.jpeg;.jpg;.woff2;.html;.ico;.gif;.bmp;.svg;.woff;.map
     private static final Set<String> ALLOW_TYPES = Sets.newHashSet("png", "jpeg", "jpg", "ico", "gif", "bmp", "svg");
@@ -72,23 +80,28 @@ public class FileRestController {
     private ResultModel<String> uploadFile(MultipartFile file, String fileName, HttpServletRequest request) {
         request.setAttribute(Constant.REQUEST_HEADER_TOKEN_KEY, WebUtil.cookieGetSid(request));
 
-        String fileType = file.getContentType();
-        boolean isAllowType = false;
-        for (String allowType : ALLOW_TYPES) {
-            if (fileType != null && fileType.contains(allowType)) {
-                isAllowType = true;
-                break;
-            }
-        }
-        CheckUtil.isFalse(isAllowType, ErrorCodeEn.FILE_UPLOAD_NOT_SUPPORT_IMG_TYPE);
+        // 文件基本校验
+        CheckUtil.checkParamToast(file, "file");
+        CheckUtil.checkParamToast(file.getOriginalFilename(), "originalFileName");
 
+        // 1. 文件大小校验
+        fileSizeValidator.validate(file.getSize(), file.getOriginalFilename());
+
+        // 2. 文件类型校验（扩展名、MIME类型、魔数）
         FileUploadImgRequest uploadImgRequest = null;
         try {
+            byte[] fileBytes = file.getBytes();
+            fileTypeValidator.validate(file.getOriginalFilename(), file.getContentType(), fileBytes);
+
             uploadImgRequest = FileUploadImgRequest.builder()
-                    .base64(file.getBytes())
+                    .base64(fileBytes)
                     .fileName(fileName)
+                    .originalFileName(file.getOriginalFilename())
+                    .fileSize(file.getSize())
+                    .contentType(file.getContentType())
                     .build();
         } catch (Exception e) {
+            log.error("文件上传处理异常, fileName={}", file.getOriginalFilename(), e);
             CheckUtil.isTrue(true, ErrorCodeEn.FILE_UPLOAD_FAIL);
         }
 

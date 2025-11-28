@@ -67,6 +67,10 @@ public enum ErrorCodeEn {
 
     FILE_UPLOAD_FAIL(4998, "文件上传失败"),
     FILE_UPLOAD_NOT_SUPPORT_IMG_TYPE(4997, "不支持的图片类型"),
+    FILE_SIZE_EXCEED(4996, "文件大小超过限制"),
+    FILE_CONTENT_TYPE_MISMATCH(4995, "文件内容与类型不匹配"),
+    FILE_VIRUS_DETECTED(4994, "文件病毒扫描未通过"),
+    FILE_SCAN_SERVICE_UNAVAILABLE(4993, "文件扫描服务不可用"),
 
     MESSAGE_NOT_EXIST(3999, "消息不存在"),
 
