@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Repository interface for managing configuration operations
  * @author Qiangqiang.Bian
  * @create 2020/12/26
  * @desc
@@ -15,35 +16,35 @@ import java.util.Set;
 public interface ConfigRepository {
 
     /**
-     * 保存
-     * @param config
+     * Save a configuration
+     * @param config the configuration to save
      */
     void save(Config config);
 
     /**
-     * 查询
-     * @param id
-     * @return
+     * Get a configuration by ID
+     * @param id the configuration ID
+     * @return the configuration if found
      */
     Config get(Long id);
 
     /**
-     * 更新
-     * @param config
+     * Update a configuration
+     * @param config the configuration to update
      */
     void update(Config config);
 
     /**
-     * 根据类型查询可用
-     * @param types
-     * @return
+     * Query available configurations by types
+     * @param types the set of configuration types
+     * @return list of available configurations
      */
     List<Config> queryAvailable(Set<String> types);
 
     /**
-     * 分页查询
-     * @param configPageRequest
-     * @return
+     * Query configurations by page
+     * @param configPageRequest the page request
+     * @return page result of configurations
      */
     PageResult<Config> page(PageRequest<Config> configPageRequest);
 }
