@@ -29,10 +29,21 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<micrometer.version>1.5.5</micrometer.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-prometheus</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-core</artifactId>
+				<version>${micrometer.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
