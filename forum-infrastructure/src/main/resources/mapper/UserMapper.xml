@@ -3,6 +3,8 @@
 
 <mapper namespace="pub.developers.forum.infrastructure.dal.dao.UserDAO">
 
+    <cache/>
+
     <resultMap id="resultMap" type="pub.developers.forum.infrastructure.dal.dataobject.UserDO">
         <id column="id" property="id"/>
         <id column="is_delete" property="isDelete"/>
