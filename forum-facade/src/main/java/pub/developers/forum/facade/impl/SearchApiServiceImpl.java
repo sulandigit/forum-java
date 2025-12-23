@@ -13,9 +13,11 @@ import pub.developers.forum.facade.validator.PageRequestModelValidator;
 import javax.annotation.Resource;
 
 /**
+ * Search API Service Implementation
+ * Provides search functionality for posts and content
+ * 
  * @author Qiangqiang.Bian
  * @create 2020/12/2
- * @desc
  **/
 @Service
 public class SearchApiServiceImpl implements SearchApiService {
@@ -23,6 +25,12 @@ public class SearchApiServiceImpl implements SearchApiService {
     @Resource
     private SearchManager searchManager;
 
+    /**
+     * Search posts by keyword with pagination
+     * 
+     * @param pageRequestModel page request with search keyword filter
+     * @return paginated list of matching posts
+     */
     @Override
     public ResultModel<PageResponseModel<PostsVO>> pagePostsSearch(PageRequestModel<String> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);

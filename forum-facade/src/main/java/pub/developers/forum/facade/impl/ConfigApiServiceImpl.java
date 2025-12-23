@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Configuration API Service Implementation
+ * Manages system configuration operations including add, update, state management, and querying
+ * 
  * @author Qiangqiang.Bian
  * @create 2020/12/26
- * @desc
  **/
 @Service
 public class ConfigApiServiceImpl implements ConfigApiService {
@@ -29,6 +31,12 @@ public class ConfigApiServiceImpl implements ConfigApiService {
     @Resource
     private ConfigManager configManager;
 
+    /**
+     * Add a new configuration entry
+     * 
+     * @param request configuration add request
+     * @return success result
+     */
     @Override
     public ResultModel add(ConfigAddRequest request) {
 
@@ -37,6 +45,12 @@ public class ConfigApiServiceImpl implements ConfigApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Update an existing configuration entry
+     * 
+     * @param request configuration update request
+     * @return success result
+     */
     @Override
     public ResultModel update(ConfigUpdateRequest request) {
 
@@ -45,6 +59,12 @@ public class ConfigApiServiceImpl implements ConfigApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Update configuration state (enable/disable)
+     * 
+     * @param request boolean request with config ID and state
+     * @return success result
+     */
     @Override
     public ResultModel state(AdminBooleanRequest request) {
 
@@ -53,6 +73,12 @@ public class ConfigApiServiceImpl implements ConfigApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Get paginated list of configurations for admin management
+     * 
+     * @param pageRequestModel page request with config filter
+     * @return paginated configuration list
+     */
     @Override
     public ResultModel<PageResponseModel<ConfigResponse>> page(PageRequestModel<ConfigPageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
@@ -60,6 +86,13 @@ public class ConfigApiServiceImpl implements ConfigApiService {
         return ResultModelUtil.success(configManager.page(pageRequestModel));
     }
 
+    /**
+     * Query available configurations by types
+     * Returns only enabled/available configurations
+     * 
+     * @param types set of configuration types to query
+     * @return list of available configurations
+     */
     @Override
     public ResultModel<List<ConfigResponse>> queryAvailable(Set<String> types) {
 

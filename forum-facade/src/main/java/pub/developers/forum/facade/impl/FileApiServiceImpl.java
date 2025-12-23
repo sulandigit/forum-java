@@ -11,9 +11,11 @@ import pub.developers.forum.facade.validator.FileValidator;
 import javax.annotation.Resource;
 
 /**
+ * File API Service Implementation
+ * Handles file upload operations, particularly image uploads
+ * 
  * @author Qiangqiang.Bian
  * @create 2020/11/23
- * @desc
  **/
 @Service
 public class FileApiServiceImpl implements FileApiService {
@@ -21,6 +23,13 @@ public class FileApiServiceImpl implements FileApiService {
     @Resource
     private FileManager fileManager;
 
+    /**
+     * Upload an image file
+     * Validates and uploads image to the configured storage system
+     * 
+     * @param request image upload request containing file data
+     * @return URL or path to the uploaded image
+     */
     @Override
     public ResultModel<String> uploadImg(FileUploadImgRequest request) {
         FileValidator.uploadImg(request);

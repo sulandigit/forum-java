@@ -15,9 +15,11 @@ import pub.developers.forum.facade.validator.PageRequestModelValidator;
 import javax.annotation.Resource;
 
 /**
+ * Comment API Service Implementation
+ * Handles comment creation and pagination for posts
+ * 
  * @author Qiangqiang.Bian
  * @create 2020/11/6
- * @desc
  **/
 @Service
 public class CommentApiServiceImpl implements CommentApiService {
@@ -25,6 +27,12 @@ public class CommentApiServiceImpl implements CommentApiService {
     @Resource
     private CommentManager commentManager;
 
+    /**
+     * Create a new comment on a post
+     * 
+     * @param request comment creation request
+     * @return success result
+     */
     @Override
     public ResultModel create(CommentCreateRequest request) {
         CommentValidator.create(request);
@@ -34,6 +42,12 @@ public class CommentApiServiceImpl implements CommentApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Get paginated list of comments for a specific post
+     * 
+     * @param pageRequest page request with post ID filter
+     * @return paginated comment list
+     */
     @Override
     public ResultModel<PageResponseModel<CommentPageResponse>> page(PageRequestModel<Long> pageRequest) {
         PageRequestModelValidator.validator(pageRequest);
