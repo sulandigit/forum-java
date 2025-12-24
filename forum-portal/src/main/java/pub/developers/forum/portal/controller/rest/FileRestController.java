@@ -1,7 +1,7 @@
 package pub.developers.forum.portal.controller.rest;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,27 +39,24 @@ public class FileRestController {
     private static final Set<String> ALLOW_TYPES = Sets.newHashSet("png", "jpeg", "jpg", "ico", "gif", "bmp", "svg");
 
     @PostMapping("/upload-wang-editor")
-    public JSONObject upload0(@RequestParam(value = "image") MultipartFile file, HttpServletRequest request) {
+    public Map<String, Object> upload0(@RequestParam(value = "image") MultipartFile file, HttpServletRequest request) {
         String fileName = StringUtil.generateUUID();
         ResultModel<String> resultModel = uploadFile(file, fileName, request);
 
-        JSONArray urlArr = new JSONArray();
-
+        Map<String, Object> url = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
         int errno = 0;
+        
         if (!resultModel.getSuccess()) {
             errno = resultModel.getCode();
         } else {
-            JSONObject url = new JSONObject();
             url.put("url", resultModel.getData());
             url.put("alt", fileName);
             url.put("href", resultModel.getData());
-
-            urlArr.add(url);
         }
 
-        JSONObject res = new JSONObject();
         res.put("errno", errno);
-        res.put("data", urlArr);
+        res.put("data", new Object[]{url});
         return res;
     }
 

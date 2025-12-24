@@ -1,6 +1,6 @@
 package pub.developers.forum.facade.aspect;
 
-import com.alibaba.fastjson.JSON;
+
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -51,7 +51,8 @@ public class LoginUserAspect {
         }
 
         LoginUserContext.setToken(token);
-        LoginUserContext.setUser(JSON.parseObject(cacheString, User.class));
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        LoginUserContext.setUser(objectMapper.readValue(cacheString, User.class));
 
         try {
             return pjp.proceed();

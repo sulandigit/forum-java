@@ -1,7 +1,8 @@
 package pub.developers.forum.portal.support;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -51,6 +52,7 @@ public class WebUtil {
     private TagApiService tagApiService;
 
     private String accessDomain;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static String cookieGetSid(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -336,7 +338,7 @@ public class WebUtil {
                 return;
             }
 
-            JSONObject jsonObject = JSON.parseObject(configResponse.getContent());
+            JsonNode jsonObject = objectMapper.readTree(configResponse.getContent());
 
             Map<String, Object> carousel = new HashMap<>();
             carousel.put("imgUrl", getImgUrl(jsonObject.getString("imgUrl")));
@@ -410,7 +412,7 @@ public class WebUtil {
             return "";
         }
 
-        Map<String, String> img = JSON.parseObject(headImgList.get(0), Map.class);
+        Map<String, String> img = objectMapper.readValue(headImgList.get(0), new TypeReference<Map<String, String>>() {});
 
         String url = img.get("url");
 

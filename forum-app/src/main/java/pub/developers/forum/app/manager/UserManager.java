@@ -1,6 +1,6 @@
 package pub.developers.forum.app.manager;
 
-import com.alibaba.fastjson.JSON;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -130,7 +130,8 @@ public class UserManager extends AbstractLoginManager {
         String cacheUserStr = cacheService.get(CacheBizTypeEn.USER_LOGIN_TOKEN, token);
         CheckUtil.isEmpty(cacheUserStr, ErrorCodeEn.USER_TOKEN_INVALID);
 
-        return UserTransfer.toUserInfoResponse(JSON.parseObject(cacheUserStr, User.class));
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        return UserTransfer.toUserInfoResponse(objectMapper.readValue(cacheUserStr, User.class));
     }
 
     public UserInfoResponse info(Long uid) {
@@ -172,7 +173,7 @@ public class UserManager extends AbstractLoginManager {
         }
 
         // 触发保存操作日志事件
-        EventBus.emit(EventBus.Topic.USER_LOGOUT, OptLog.createUserLogoutRecordLog(user.getId(), JSON.toJSONString(request)));
+        EventBus.emit(EventBus.Topic.USER_LOGOUT, OptLog.createUserLogoutRecordLog(user.getId(), pub.developers.forum.common.support.StringUtil.toJSONString(request)));
     }
 
     /**
@@ -274,7 +275,8 @@ public class UserManager extends AbstractLoginManager {
             return null;
         }
 
-        User loginUser = JSON.parseObject(oldUser, User.class);
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        User loginUser = objectMapper.readValue(oldUser, User.class);
         cacheService.del(CacheBizTypeEn.USER_LOGIN_TOKEN, String.valueOf(loginUser.getId()));
         cacheService.del(CacheBizTypeEn.USER_LOGIN_TOKEN, token);
 

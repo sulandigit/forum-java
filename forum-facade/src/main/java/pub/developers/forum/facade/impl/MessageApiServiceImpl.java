@@ -1,6 +1,6 @@
 package pub.developers.forum.facade.impl;
 
-import com.alibaba.fastjson.JSON;
+
 import org.springframework.stereotype.Service;
 import pub.developers.forum.api.model.PageRequestModel;
 import pub.developers.forum.api.model.PageResponseModel;
@@ -29,7 +29,8 @@ public class MessageApiServiceImpl implements MessageApiService {
     @Override
     public ResultModel<PageResponseModel<MessagePageResponse>> page(PageRequestModel<MessagePageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
-        pageRequestModel.setFilter(JSON.parseObject(JSON.toJSONString(pageRequestModel.getFilter()), MessagePageRequest.class));
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        pageRequestModel.setFilter(objectMapper.convertValue(pageRequestModel.getFilter(), MessagePageRequest.class));
         MessageValidator.page(pageRequestModel.getFilter());
 
         return ResultModelUtil.success(messageManager.page(pageRequestModel));

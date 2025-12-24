@@ -1,6 +1,6 @@
 package pub.developers.forum.facade.impl;
 
-import com.alibaba.fastjson.JSON;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pub.developers.forum.api.model.PageRequestModel;
@@ -64,7 +64,8 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> pageFollower(PageRequestModel<Long> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
-        pageRequestModel.setFilter(JSON.parseObject(JSON.toJSONString(pageRequestModel.getFilter()), Long.class));
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        pageRequestModel.setFilter(objectMapper.convertValue(pageRequestModel.getFilter(), Long.class));
 
         return ResultModelUtil.success(userManager.pageFollower(pageRequestModel));
     }
@@ -72,7 +73,8 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> pageFans(PageRequestModel<Long> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
-        pageRequestModel.setFilter(JSON.parseObject(JSON.toJSONString(pageRequestModel.getFilter()), Long.class));
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        pageRequestModel.setFilter(objectMapper.convertValue(pageRequestModel.getFilter(), Long.class));
 
         return ResultModelUtil.success(userManager.pageFans(pageRequestModel));
     }
@@ -143,7 +145,8 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> adminPage(PageRequestModel<UserAdminPageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
-        UserAdminPageRequest request = JSON.parseObject(JSON.toJSONString(pageRequestModel.getFilter()), UserAdminPageRequest.class);
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        UserAdminPageRequest request = objectMapper.convertValue(pageRequestModel.getFilter(), UserAdminPageRequest.class);
         UserValidator.adminPage(request);
         pageRequestModel.setFilter(request);
 
@@ -158,7 +161,8 @@ public class UserApiServiceImpl implements UserApiService {
     @Override
     public ResultModel<PageResponseModel<UserOptLogPageResponse>> pageOptLog(PageRequestModel<UserOptLogPageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
-        UserOptLogPageRequest request = JSON.parseObject(JSON.toJSONString(pageRequestModel.getFilter()), UserOptLogPageRequest.class);
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        UserOptLogPageRequest request = objectMapper.convertValue(pageRequestModel.getFilter(), UserOptLogPageRequest.class);
         pageRequestModel.setFilter(request);
 
         return ResultModelUtil.success(userManager.pageOptLog(pageRequestModel));

@@ -1,11 +1,13 @@
 package pub.developers.forum.app.manager;
 
-import com.alibaba.fastjson.JSON;
+import pub.developers.forum.common.support.StringUtil;
 import org.springframework.util.ObjectUtils;
 import pub.developers.forum.api.request.user.UserBaseLoginRequest;
 import pub.developers.forum.common.enums.CacheBizTypeEn;
 import pub.developers.forum.common.support.EventBus;
 import pub.developers.forum.common.support.StringUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import pub.developers.forum.domain.entity.OptLog;
 import pub.developers.forum.domain.entity.User;
 import pub.developers.forum.domain.repository.UserRepository;
@@ -37,7 +39,7 @@ public class AbstractLoginManager {
         cacheLoginUser(token, user);
 
         // 触发保存操作日志事件
-        EventBus.emit(EventBus.Topic.USER_LOGIN, OptLog.createUserLoginRecordLog(user.getId(), JSON.toJSONString(baseLoginRequest)));
+        EventBus.emit(EventBus.Topic.USER_LOGIN, OptLog.createUserLoginRecordLog(user.getId(), StringUtil.toJSONString(baseLoginRequest)));
 
         return token;
     }
@@ -50,7 +52,7 @@ public class AbstractLoginManager {
         cacheService.setAndExpire(CacheBizTypeEn.USER_LOGIN_TOKEN
                 , String.valueOf(user.getId()), token, USER_LOGIN_TOKEN_EXPIRE_TIMEOUT);
         cacheService.setAndExpire(CacheBizTypeEn.USER_LOGIN_TOKEN
-                , token, JSON.toJSONString(user), USER_LOGIN_TOKEN_EXPIRE_TIMEOUT);
+                , token, StringUtil.toJSONString(user), USER_LOGIN_TOKEN_EXPIRE_TIMEOUT);
     }
 
     protected void deleteLoginUser(Long userId) {
