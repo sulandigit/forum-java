@@ -29,15 +29,17 @@ public class CommentApiServiceImpl implements CommentApiService {
     public ResultModel create(CommentCreateRequest request) {
         CommentValidator.create(request);
 
-        commentManager.create(request);
+        Long commentId = commentManager.create(request);
 
-        return ResultModelUtil.success();
+        return ResultModelUtil.success(commentId);
     }
 
     @Override
     public ResultModel<PageResponseModel<CommentPageResponse>> page(PageRequestModel<Long> pageRequest) {
         PageRequestModelValidator.validator(pageRequest);
 
-        return ResultModelUtil.success(commentManager.page(pageRequest));
+        PageResponseModel<CommentPageResponse> pageResponse = commentManager.page(pageRequest);
+
+        return ResultModelUtil.success(pageResponse);
     }
 }
