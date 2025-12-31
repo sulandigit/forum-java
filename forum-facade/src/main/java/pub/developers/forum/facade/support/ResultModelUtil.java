@@ -3,40 +3,36 @@ package pub.developers.forum.facade.support;
 import pub.developers.forum.api.model.ResultModel;
 import pub.developers.forum.common.enums.ErrorCodeEn;
 
-/**
- * @author Qiangqiang.Bian
- * @create 20/7/30
- * @desc
- **/
 public class ResultModelUtil {
 
+    private ResultModelUtil() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static ResultModel success() {
-        return new ResultModel();
+        return ResultModel.builder().build();
     }
 
     public static <T> ResultModel<T> success(T data) {
-        ResultModel<T> resultModel = new ResultModel<T>();
-        resultModel.setData(data);
-
-        return resultModel;
+        return ResultModel.<T>builder()
+                .data(data)
+                .build();
     }
 
     public static ResultModel fail(ErrorCodeEn errorCode) {
-        ResultModel resultModel = new ResultModel();
-        resultModel.setCode(errorCode.getCode());
-        resultModel.setMessage(errorCode.getMessage());
-        resultModel.setSuccess(Boolean.FALSE);
-
-        return resultModel;
+        return ResultModel.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .success(Boolean.FALSE)
+                .build();
     }
 
     public static ResultModel fail(Integer code, String message) {
-        ResultModel resultModel = new ResultModel();
-        resultModel.setCode(code);
-        resultModel.setMessage(message);
-        resultModel.setSuccess(Boolean.FALSE);
-
-        return resultModel;
+        return ResultModel.builder()
+                .code(code)
+                .message(message)
+                .success(Boolean.FALSE)
+                .build();
     }
 
 }
