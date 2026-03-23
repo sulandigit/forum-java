@@ -35,9 +35,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ * Web utility class for portal layer.
+ * Provides helper methods for cookie management, request parsing,
+ * view model building, pagination, image URL processing, and date formatting.
+ *
  * @author Qiangqiang.Bian
  * @create 2020/10/25
- * @desc
  **/
 @Data
 @ConfigurationProperties(prefix = "custom-config.upload-file.qiniu")
@@ -50,8 +53,16 @@ public class WebUtil {
     @Resource
     private TagApiService tagApiService;
 
+    /** Qiniu CDN access domain for file uploads */
     private String accessDomain;
 
+    /**
+     * Retrieve the session ID from the request.
+     * Checks in order: cookie, request header, query parameter.
+     *
+     * @param request the HTTP servlet request
+     * @return the session ID, or null if not found
+     */
     public static String cookieGetSid(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (!ObjectUtils.isEmpty(cookies)) {
@@ -75,12 +86,23 @@ public class WebUtil {
         return null;
     }
 
+    /**
+     * Add a session ID cookie to the HTTP response.
+     *
+     * @param response the HTTP servlet response
+     * @param sid      the session ID to store
+     */
     public static void cookieAddSid(HttpServletResponse response, String sid) {
         Cookie cookie = new Cookie(WebConst.COOKIE_SID_KEY, sid);
         cookie.setPath("/");
         response.addCookie(cookie);
     }
 
+    /**
+     * Delete the session ID cookie from the HTTP response by setting max age to 0.
+     *
+     * @param response the HTTP servlet response
+     */
     public static void cookieDelSid(HttpServletResponse response) {
         Cookie cookie = new Cookie(WebConst.COOKIE_SID_KEY, null);
         cookie.setPath("/");
@@ -88,6 +110,13 @@ public class WebUtil {
         response.addCookie(cookie);
     }
 
+    /**
+     * Extract the client IP address from the request.
+     * Checks X-Forwarded-For and X-Real-IP headers before falling back to remote address.
+     *
+     * @param request the HTTP servlet request
+     * @return the client IP address
+     */
     public static String requestIp(HttpServletRequest request) {
         String ret = request.getHeader("X-forwarded-for");
         if(ObjectUtils.isEmpty(ret)) {
@@ -97,6 +126,12 @@ public class WebUtil {
         return ObjectUtils.isEmpty(ret) ? request.getRemoteAddr() : ret.split(",")[0];
     }
 
+    /**
+     * Extract the User-Agent string from the request.
+     *
+     * @param request the HTTP servlet request
+     * @return the User-Agent header value, or empty string if absent
+     */
     public static String requestUa(HttpServletRequest request) {
         String value = request.getHeader("User-Agent");
         if (ObjectUtils.isEmpty(value)) {
@@ -106,6 +141,12 @@ public class WebUtil {
         return value;
     }
 
+    /**
+     * Fetch posts related to the given tag IDs and convert them into view model maps.
+     *
+     * @param tagIds the set of tag IDs to match
+     * @return a list of post view maps containing basic post info, stats, author info and tags
+     */
     public List<Map<String, Object>> relatedPosts(Set<Long> tagIds) {
         List<Map<String, Object>> res = new ArrayList<>();
 
@@ -148,6 +189,11 @@ public class WebUtil {
         return res;
     }
 
+    /**
+     * Query all referenced tags and return them as view model maps with name and color.
+     *
+     * @return a list of tag maps
+     */
     public List<Map<String, Object>> usedTags() {
         List<Map<String, Object>> res = new ArrayList<>();
 
@@ -166,6 +212,12 @@ public class WebUtil {
         return res;
     }
 
+    /**
+     * Build a view model map for an article detail page.
+     *
+     * @param articleInfoResponse the article info response DTO
+     * @return a map containing article metadata, content, stats, and tags
+     */
     public Map<String, Object> buildPostsInfo(ArticleInfoResponse articleInfoResponse) {
         Map<String, Object> posts = new HashMap<>();
         posts.put("title", articleInfoResponse.getTitle());
@@ -185,6 +237,12 @@ public class WebUtil {
         return posts;
     }
 
+    /**
+     * Build a view model map for a FAQ detail page.
+     *
+     * @param faqInfoResponse the FAQ info response DTO
+     * @return a map containing FAQ metadata, content, stats, and tags
+     */
     public Map<String, Object> buildPostsInfo(FaqInfoResponse faqInfoResponse) {
         Map<String, Object> posts = new HashMap<>();
         posts.put("title", faqInfoResponse.getTitle());
@@ -204,6 +262,13 @@ public class WebUtil {
         return posts;
     }
 
+    /**
+     * Build a list of view model maps from generic post VOs for the posts list page.
+     * Includes introduction text, head image, solution info, tags, author, and stats.
+     *
+     * @param responses the list of post VOs
+     * @return a list of post view maps
+     */
     public List<Map<String, Object>> buildPostsList(List<PostsVO> responses) {
         List<Map<String, Object>> articleList = new ArrayList<>();
 
@@ -249,6 +314,13 @@ public class WebUtil {
         return articleList;
     }
 
+    /**
+     * Build a list of view model maps from article user-page response DTOs.
+     * Used for the article listing on user profile and index pages.
+     *
+     * @param responses the list of article page response DTOs
+     * @return a list of article view maps
+     */
     public List<Map<String, Object>> buildArticles(List<ArticleUserPageResponse> responses) {
         List<Map<String, Object>> articleList = new ArrayList<>();
 
@@ -289,6 +361,13 @@ public class WebUtil {
         return articleList;
     }
 
+    /**
+     * Build a list of view model maps from FAQ user-page response DTOs.
+     * Used for the FAQ listing page, includes solution status info.
+     *
+     * @param responses the list of FAQ page response DTOs
+     * @return a list of FAQ view maps
+     */
     public List<Map<String, Object>> buildFaqs(List<FaqUserPageResponse> responses) {
         List<Map<String, Object>> articleList = new ArrayList<>();
 
@@ -328,6 +407,14 @@ public class WebUtil {
         return articleList;
     }
 
+    /**
+     * Build a filtered carousel list from config responses for the given config type.
+     * Parses JSON content to extract image URL and action URL.
+     *
+     * @param configResponses the list of config response DTOs
+     * @param configType      the config type to filter by (e.g. HOME_CAROUSEL, SIDEBAR_CAROUSEL)
+     * @return a list of carousel view maps
+     */
     public List<Map<String, Object>> carouselList(List<ConfigResponse> configResponses, ConfigTypeEn configType) {
         List<Map<String, Object>> carouselList = new ArrayList<>();
 
@@ -349,6 +436,15 @@ public class WebUtil {
         return carouselList;
     }
 
+    /**
+     * Build pagination data for the view layer.
+     * Computes total pages, visible page range, navigation links, and current/first/last flags.
+     *
+     * @param pageNum           the current page number (1-based)
+     * @param queryPath         the base query path for page links (e.g. "?type=xxx&pageNo=")
+     * @param pageResponseModel the page response containing total record count
+     * @return a map with pagination data for the template
+     */
     public Map<String, Object> buildPager(Integer pageNum, String queryPath, PageResponseModel pageResponseModel) {
         Long pageNo = Long.valueOf(pageNum);
         Long totalPage = calculateTotalPages(pageResponseModel.getTotal());
@@ -378,11 +474,22 @@ public class WebUtil {
         return pager;
     }
 
+    /**
+     * Calculate the total number of pages from the total record count and configured page size.
+     */
     private Long calculateTotalPages(Long total) {
         long pageSize = globalViewConfig.getPageSize();
         return total % pageSize != 0 ? total / pageSize + 1 : total / pageSize;
     }
 
+    /**
+     * Build the list of page number entries with their navigation links.
+     *
+     * @param start     the start index (0-based, inclusive)
+     * @param end       the end index (0-based, exclusive)
+     * @param queryPath the base query path for page links
+     * @return a list of page maps each containing "no" and "href"
+     */
     private List<Map<String, Object>> buildPagesList(Long start, Long end, String queryPath) {
         List<Map<String, Object>> pages = new ArrayList<>();
         for (long i = start; i < end; i++) {
@@ -395,6 +502,13 @@ public class WebUtil {
         return pages;
     }
 
+    /**
+     * Extract the first image URL from a JSON-encoded head image list,
+     * and append the CDN image style suffix if applicable.
+     *
+     * @param headImgs JSON string of head image array
+     * @return the processed image URL, or empty string if none
+     */
     private String headImg(String headImgs) {
         if (ObjectUtils.isEmpty(headImgs)) {
             return "";
@@ -414,6 +528,13 @@ public class WebUtil {
         return url;
     }
 
+    /**
+     * Append the CDN image style suffix to the given image URL if it belongs to
+     * the configured access domain and does not already contain query parameters.
+     *
+     * @param imgUrl the original image URL
+     * @return the image URL with CDN style suffix appended, or the original URL
+     */
     public String getImgUrl(String imgUrl) {
         if (ObjectUtils.isEmpty(imgUrl) || !imgUrl.startsWith(accessDomain) || imgUrl.contains("?")) {
             return imgUrl;
@@ -421,6 +542,13 @@ public class WebUtil {
         return imgUrl + globalViewConfig.getCdnImgStyle();
     }
 
+    /**
+     * Process HTML content by applying CDN image style to all img tags
+     * and removing all script tags for security.
+     *
+     * @param htmlContent the raw HTML content
+     * @return the sanitized HTML with CDN image styles applied
+     */
     private String htmlContent(String htmlContent) {
         String cdnImgStyle = globalViewConfig.getCdnImgStyle();
         if (ObjectUtils.isEmpty(cdnImgStyle)) {
@@ -442,9 +570,18 @@ public class WebUtil {
         return document.toString();
     }
 
+    /** Regex patterns used to strip common Markdown syntax from content */
     private static final List<String> MARKDOWN_IDENTIFIERS = Arrays.asList("\\*", "#", "\\+\\+", "~", "==",
             "^", ":::", "hljs-left", "hljs-center", "hljs-right", ">", "- ", "```", " ");
 
+    /**
+     * Generate a plain-text introduction snippet from Markdown content.
+     * Strips Markdown syntax and truncates to 250 chars (with head image) or 300 chars (without).
+     *
+     * @param content     the raw Markdown content
+     * @param hasHeadImg  whether the post has a head image (shorter truncation if true)
+     * @return the truncated plain-text introduction
+     */
     private static String getIntroduction(String content, Boolean hasHeadImg) {
         for (String identifier : MARKDOWN_IDENTIFIERS) {
             content = content.replaceAll(identifier, "");
@@ -467,12 +604,20 @@ public class WebUtil {
         return result;
     }
 
+    // Time unit constants in milliseconds for relative date display
     private static final Long ONE_SECOND_TIME = 1000L;
     private static final Long ONE_MINUTE_TIME = ONE_SECOND_TIME * 60;
     private static final Long ONE_HOUR_TIME = ONE_MINUTE_TIME * 60;
     private static final Long ONE_DAY_TIME = ONE_HOUR_TIME * 24;
     private static final Long ONE_MONTH_TIME = ONE_DAY_TIME * 30;
 
+    /**
+     * Format a date as a human-readable relative time string (e.g. "3 minutes ago").
+     * Falls back to "yyyy-MM-dd" format for dates older than one month.
+     *
+     * @param date the date to format
+     * @return the formatted relative time string
+     */
     private static String dateShow(Date date) {
         Long timeout = System.currentTimeMillis() - date.getTime();
 
@@ -491,6 +636,14 @@ public class WebUtil {
         return new SimpleDateFormat("yyyy年MM月dd日").format(date);
     }
 
+    /**
+     * Calculate a ceiling division result for time-based relative display.
+     * Returns (l1 / l2) rounded up.
+     *
+     * @param l1 the dividend (elapsed time in milliseconds)
+     * @param l2 the divisor (time unit in milliseconds)
+     * @return the rounded-up quotient
+     */
     private static Long calculateTime(Long l1, Long l2) {
         return l1 % l2 > 0 ? l1 / l2 + 1 : l1 / l2;
     }
