@@ -351,54 +351,48 @@ public class WebUtil {
 
     public Map<String, Object> buildPager(Integer pageNum, String queryPath, PageResponseModel pageResponseModel) {
         Long pageNo = Long.valueOf(pageNum);
+        Long totalPage = calculateTotalPages(pageResponseModel.getTotal());
 
         Map<String, Object> pager = new HashMap<>();
 
-        Long totalPage = pageResponseModel.getTotal() / globalViewConfig.getPageSize();
-        if (pageResponseModel.getTotal() % globalViewConfig.getPageSize() != 0) {
-            totalPage += 1;
-        }
-
-        boolean preMore = false;
-        Long start = 0L;
-        if (pageNo > 3) {
-            preMore = true;
-            start = pageNo - 2;
-        }
-
-        boolean nextMore = false;
-        Long end = totalPage;
-        if (totalPage - pageNo > 2) {
-            nextMore = true;
-            end = pageNo + 1;
-        }
+        boolean preMore = pageNo > 3;
+        Long start = preMore ? pageNo - 2 : 0L;
+        boolean nextMore = totalPage - pageNo > 2;
+        Long end = nextMore ? pageNo + 1 : totalPage;
 
         pager.put("preMore", preMore);
         pager.put("nextMore", nextMore);
         pager.put("firstNoHref", queryPath + 1);
         pager.put("lastNoHref", queryPath + totalPage);
         pager.put("lastNo", totalPage);
-
-        List<Map<String, Object>> pages = new ArrayList<>();
-        for (long i = start; i < end; i ++) {
-            Map<String, Object> page = new HashMap<>();
-            long no = i + 1;
-            page.put("no", no);
-            page.put("href", queryPath + no);
-            pages.add(page);
-        }
-        pager.put("pages", pages);
+        pager.put("pages", buildPagesList(start, end, queryPath));
         pager.put("current", pageNo);
 
         boolean first = pageNo.equals(1L);
         boolean last = totalPage == 0L || pageNo.equals(totalPage);
         pager.put("first", first);
         pager.put("last", last);
-
         pager.put("pre", queryPath + (first ? pageNo : pageNo - 1));
         pager.put("next", queryPath + (last ? pageNo : pageNo + 1));
 
         return pager;
+    }
+
+    private Long calculateTotalPages(Long total) {
+        long pageSize = globalViewConfig.getPageSize();
+        return total % pageSize != 0 ? total / pageSize + 1 : total / pageSize;
+    }
+
+    private List<Map<String, Object>> buildPagesList(Long start, Long end, String queryPath) {
+        List<Map<String, Object>> pages = new ArrayList<>();
+        for (long i = start; i < end; i++) {
+            Map<String, Object> page = new HashMap<>();
+            long no = i + 1;
+            page.put("no", no);
+            page.put("href", queryPath + no);
+            pages.add(page);
+        }
+        return pages;
     }
 
     private String headImg(String headImgs) {
