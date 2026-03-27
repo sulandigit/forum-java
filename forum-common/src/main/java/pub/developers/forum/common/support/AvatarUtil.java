@@ -1,7 +1,7 @@
 package pub.developers.forum.common.support;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Qiangqiang.Bian
@@ -10,11 +10,24 @@ import org.springframework.util.ObjectUtils;
  **/
 public class AvatarUtil {
 
-    // https://www.gravatar.com/avatar/
     private static final String GRAVATAR_URL = "https://sdn.geekzu.org/avatar/%s?d=retro";
+    private static final String EMPTY_STRING = "";
+
+    private AvatarUtil() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static String get(String avatar, String email) {
-        return ObjectUtils.isEmpty(avatar) ? String.format(GRAVATAR_URL, DigestUtils.md5Hex(ObjectUtils.isEmpty(email) ? "" : email)) : avatar;
+        if (StringUtils.hasText(avatar)) {
+            return avatar;
+        }
+        return generateGravatarUrl(email);
+    }
+
+    private static String generateGravatarUrl(String email) {
+        String emailToHash = StringUtils.hasText(email) ? email : EMPTY_STRING;
+        String emailHash = DigestUtils.md5Hex(emailToHash);
+        return String.format(GRAVATAR_URL, emailHash);
     }
 
 }
