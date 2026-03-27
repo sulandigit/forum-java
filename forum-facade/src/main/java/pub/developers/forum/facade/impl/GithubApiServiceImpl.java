@@ -11,9 +11,11 @@ import pub.developers.forum.facade.support.ResultModelUtil;
 import javax.annotation.Resource;
 
 /**
+ * GitHub API Service Implementation
+ * Handles GitHub OAuth authentication and integration
+ * 
  * @author Qiangqiang.Bian
  * @create 2021/5/15
- * @desc
  **/
 @Service
 public class GithubApiServiceImpl implements GithubApiService {
@@ -21,6 +23,13 @@ public class GithubApiServiceImpl implements GithubApiService {
     @Resource
     private GithubManager githubManager;
 
+    /**
+     * Handle GitHub OAuth login
+     * Exchanges OAuth code for user authentication token
+     * 
+     * @param request GitHub OAuth login request containing authorization code
+     * @return authentication token
+     */
     @Override
     public ResultModel<String> oauthLogin(GithubOauthLoginRequest request) {
         CheckUtil.checkParamToast(request, "request");

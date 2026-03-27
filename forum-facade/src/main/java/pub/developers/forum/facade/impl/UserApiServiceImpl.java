@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * User API Service Implementation
+ * Provides user-related operations including authentication, profile management, follow system, and admin functions
+ * 
  * @author Qiangqiang.Bian
  * @create 20/7/30
- * @desc
  **/
 @Service
 public class UserApiServiceImpl implements UserApiService {
@@ -33,6 +35,12 @@ public class UserApiServiceImpl implements UserApiService {
     @Resource
     private UserManager userManager;
 
+    /**
+     * Enable a user account
+     * 
+     * @param uid user ID
+     * @return success result
+     */
     @Override
     public ResultModel enable(Long uid) {
         userManager.enable(uid);
@@ -40,6 +48,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Disable a user account
+     * 
+     * @param uid user ID
+     * @return success result
+     */
     @Override
     public ResultModel disable(Long uid) {
         userManager.disable(uid);
@@ -47,6 +61,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Follow a user
+     * 
+     * @param followed user ID to follow
+     * @return success result
+     */
     @Override
     public ResultModel follow(Long followed) {
         userManager.follow(followed);
@@ -54,6 +74,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Cancel following a user
+     * 
+     * @param followed user ID to unfollow
+     * @return success result
+     */
     @Override
     public ResultModel cancelFollow(Long followed) {
         userManager.cancelFollow(followed);
@@ -61,6 +87,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Get paginated list of users that the specified user is following
+     * 
+     * @param pageRequestModel page request with user ID filter
+     * @return paginated list of followed users
+     */
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> pageFollower(PageRequestModel<Long> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
@@ -69,6 +101,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.pageFollower(pageRequestModel));
     }
 
+    /**
+     * Get paginated list of fans (followers) of the specified user
+     * 
+     * @param pageRequestModel page request with user ID filter
+     * @return paginated list of fans
+     */
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> pageFans(PageRequestModel<Long> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
@@ -77,21 +115,45 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.pageFans(pageRequestModel));
     }
 
+    /**
+     * Check if current user has followed the specified user
+     * 
+     * @param followed user ID to check
+     * @return true if following, false otherwise
+     */
     @Override
     public ResultModel<Boolean> hasFollow(Long followed) {
         return ResultModelUtil.success(userManager.hasFollow(followed));
     }
 
+    /**
+     * Get user information by authentication token
+     * 
+     * @param token authentication token
+     * @return user information
+     */
     @Override
     public ResultModel<UserInfoResponse> info(String token) {
         return ResultModelUtil.success(userManager.info(token));
     }
 
+    /**
+     * Get user information by user ID
+     * 
+     * @param uid user ID
+     * @return user information
+     */
     @Override
     public ResultModel<UserInfoResponse> info(Long uid) {
         return ResultModelUtil.success(userManager.info(uid));
     }
 
+    /**
+     * Register a new user account
+     * 
+     * @param request user registration request
+     * @return authentication token
+     */
     @Override
     public ResultModel<String> register(UserRegisterRequest request) {
         UserValidator.register(request);
@@ -99,6 +161,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.register(request));
     }
 
+    /**
+     * User login with email and password
+     * 
+     * @param request email login request
+     * @return authentication token
+     */
     @Override
     public ResultModel<String> emailLogin(UserEmailLoginRequest request) {
         UserValidator.emailLogin(request);
@@ -106,6 +174,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.emailRequestLogin(request));
     }
 
+    /**
+     * User logout
+     * 
+     * @param request logout request with token
+     * @return success result
+     */
     @Override
     public ResultModel logout(UserTokenLogoutRequest request) {
         UserValidator.logout(request);
@@ -115,6 +189,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Update user profile information
+     * 
+     * @param request user information update request
+     * @return success result
+     */
     @Override
     public ResultModel updateInfo(UserUpdateInfoRequest request) {
         UserValidator.updateInfo(request);
@@ -123,14 +203,25 @@ public class UserApiServiceImpl implements UserApiService {
 
         return ResultModelUtil.success();
     }
+
+    /**
+     * Update user avatar/head image
+     * 
+     * @param linkFilenameData image link or filename data
+     * @return success result
+     */
     @Override
     public ResultModel updateHeadImg(String linkFilenameData) {
-
-
         userManager.updateHeadimg(linkFilenameData);
         return ResultModelUtil.success();
     }
 
+    /**
+     * Update user password
+     * 
+     * @param request password update request
+     * @return success result
+     */
     @Override
     public ResultModel updatePwd(UserUpdatePwdRequest request) {
         UserValidator.updatePwd(request);
@@ -140,6 +231,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success();
     }
 
+    /**
+     * Get paginated user list for admin management
+     * 
+     * @param pageRequestModel page request with admin query filter
+     * @return paginated user list
+     */
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> adminPage(PageRequestModel<UserAdminPageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
@@ -150,11 +247,23 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.page(pageRequestModel));
     }
 
+    /**
+     * Get paginated list of active users
+     * 
+     * @param pageRequestModel page request
+     * @return paginated active user list
+     */
     @Override
     public ResultModel<PageResponseModel<UserPageResponse>> pageActive(PageRequestModel pageRequestModel) {
         return ResultModelUtil.success(userManager.pageActive(pageRequestModel));
     }
 
+    /**
+     * Get paginated user operation logs
+     * 
+     * @param pageRequestModel page request with operation log filter
+     * @return paginated operation log list
+     */
     @Override
     public ResultModel<PageResponseModel<UserOptLogPageResponse>> pageOptLog(PageRequestModel<UserOptLogPageRequest> pageRequestModel) {
         PageRequestModelValidator.validator(pageRequestModel);
@@ -164,6 +273,12 @@ public class UserApiServiceImpl implements UserApiService {
         return ResultModelUtil.success(userManager.pageOptLog(pageRequestModel));
     }
 
+    /**
+     * Update user role (admin privileges)
+     * 
+     * @param booleanRequest boolean request with user ID and role status
+     * @return success result
+     */
     @Override
     public ResultModel updateRole(AdminBooleanRequest booleanRequest) {
         ArticleValidator.validatorBooleanRequest(booleanRequest);
