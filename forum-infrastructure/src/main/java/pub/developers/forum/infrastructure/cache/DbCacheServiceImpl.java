@@ -1,6 +1,6 @@
 package pub.developers.forum.infrastructure.cache;
 
-import com.alibaba.fastjson.JSON;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -170,7 +170,8 @@ public class DbCacheServiceImpl implements CacheService {
             List<CacheDO> cacheDOList = SafesUtil.ofList(cacheDAO.getAll());
             cacheDOList.forEach(cacheDO -> {
                 try {
-                    StringValue stringValue = JSON.parseObject(cacheDO.getValue(), StringValue.class);
+                    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    StringValue stringValue = objectMapper.readValue(cacheDO.getValue(), StringValue.class);
                     // 过滤已过期的数据
                     if (!stringValue.isExpired()) {
                         ALL_CACHE.put(cacheDO.getKey(), stringValue);
@@ -290,7 +291,7 @@ public class DbCacheServiceImpl implements CacheService {
             StringValue stringValue = ALL_CACHE.get(key);
             if (stringValue != null) {
                 try {
-                    cacheDAO.updateByKey(key, JSON.toJSONString(stringValue));
+                    cacheDAO.updateByKey(key, pub.developers.forum.common.support.StringUtil.toJSONString(stringValue));
                     successCount++;
                 } catch (Exception e) {
                     log.error("更新缓存失败, key: {}", key, e);
@@ -320,7 +321,7 @@ public class DbCacheServiceImpl implements CacheService {
             if (stringValue != null) {
                 CacheDO cacheDO = CacheDO.builder()
                         .key(key)
-                        .value(JSON.toJSONString(stringValue))
+                        .value(pub.developers.forum.common.support.StringUtil.toJSONString(stringValue))
                         .type(stringValue.getType())
                         .build();
                 cacheDO.initBase();

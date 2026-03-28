@@ -1,6 +1,6 @@
 package pub.developers.forum.app.transfer;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.util.ObjectUtils;
 import pub.developers.forum.api.request.user.UserAdminPageRequest;
 import pub.developers.forum.api.request.user.UserRegisterRequest;
@@ -21,6 +21,7 @@ import pub.developers.forum.domain.entity.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 /**
@@ -72,7 +73,7 @@ public class UserTransfer {
         return users.stream().map(UserTransfer::buildUserPageResponse).collect(Collectors.toList());
     }
 
-    public static User toGithubUser(JSONObject githubUser, String email, String nickname, String signature, String avatar) {
+    public static User toGithubUser(com.fasterxml.jackson.databind.JsonNode githubUser, String email, String nickname, String signature, String avatar) {
         return User.builder()
                 .email(email)
                 .state(UserStateEn.UN_ACTIVATION)

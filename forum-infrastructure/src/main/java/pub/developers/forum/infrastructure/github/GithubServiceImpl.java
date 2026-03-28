@@ -1,7 +1,7 @@
 package pub.developers.forum.infrastructure.github;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,7 +40,7 @@ public class GithubServiceImpl implements GithubService {
     private GlobalViewConfig globalViewConfig;
 
     @Override
-    public JSONObject getUserInfo(String code) {
+    public JsonNode getUserInfo(String code) {
         try {
             String token = getAccessToken(code);
             return getUser(token);
@@ -50,7 +50,7 @@ public class GithubServiceImpl implements GithubService {
         return null;
     }
 
-    private JSONObject getUser(String token) {
+    private JsonNode getUser(String token) {
         String url = "https://api.github.com/user";
 
         MultiValueMap<String, String> headers = new HttpHeaders();
@@ -58,13 +58,18 @@ public class GithubServiceImpl implements GithubService {
         headers.add("Authorization", "token " + token);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-        LogUtil.info(log, "github getUser url={}, httpEntity={}", url, JSON.toJSONString(httpEntity));
+        LogUtil.info(log, "github getUser url={}, httpEntity={}", url, pub.developers.forum.common.support.StringUtil.toJSONString(httpEntity));
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
 
         String userBody = responseEntity.getBody();
         LogUtil.info(log, "github getUser url={}, userBody={}", url, userBody);
 
-        return JSON.parseObject(userBody);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readTree(userBody);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse user info from GitHub", e);
+        }
     }
 
     private String getAccessToken(String code) {
@@ -74,12 +79,18 @@ public class GithubServiceImpl implements GithubService {
         headers.add("accept", "application/json");
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
-        LogUtil.info(log, "github getAccessToken url={}, httpEntity={}", url, JSON.toJSONString(httpEntity));
+        LogUtil.info(log, "github getAccessToken url={}, httpEntity={}", url, pub.developers.forum.common.support.StringUtil.toJSONString(httpEntity));
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
 
         String tokenBody = responseEntity.getBody();
         LogUtil.info(log, "github getAccessToken url={}, tokenBody={}", url, tokenBody);
-        JSONObject jsonObject = JSON.parseObject(tokenBody);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonObject;
+        try {
+            jsonObject = objectMapper.readTree(tokenBody);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse token from GitHub", e);
+        }
 
         // {"access_token":"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","token_type":"bearer","scope":"user"}
         return jsonObject.getString("access_token");

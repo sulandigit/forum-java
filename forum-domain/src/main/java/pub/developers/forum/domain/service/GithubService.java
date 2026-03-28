@@ -1,6 +1,6 @@
 package pub.developers.forum.domain.service;
 
-import com.alibaba.fastjson.JSONObject;
+
 
 /**
  * @author Qiangqiang.Bian
@@ -9,6 +9,6 @@ import com.alibaba.fastjson.JSONObject;
  **/
 public interface GithubService {
 
-    JSONObject getUserInfo(String code);
+    com.fasterxml.jackson.databind.JsonNode getUserInfo(String code);
 
 }

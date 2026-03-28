@@ -1,7 +1,8 @@
 package pub.developers.forum.infrastructure.transfer;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.ObjectUtils;
 import pub.developers.forum.common.enums.*;
 import pub.developers.forum.common.support.SafesUtil;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class UserTransfer {
 
     private static final String EXT_KET_GITHUB_USER = "githubUser";
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static Follow toFollow(UserFollowDO userFollowDO) {
         Follow follow = Follow.builder()
@@ -58,7 +60,11 @@ public class UserTransfer {
         if (!ObjectUtils.isEmpty(user.getGithubUser())) {
             Map<String, Object> ext = new HashMap<>();
             ext.put(EXT_KET_GITHUB_USER, user.getGithubUser());
-            userDO.setExt(JSON.toJSONString(ext));
+            try {
+                userDO.setExt(objectMapper.writeValueAsString(ext));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to serialize githubUser to JSON", e);
+            }
         }
         if (!ObjectUtils.isEmpty(user.getRole())) {
             userDO.setRole(user.getRole().getValue());
@@ -95,8 +101,15 @@ public class UserTransfer {
                 .build();
 
         if (!ObjectUtils.isEmpty(userDO.getExt())) {
-            JSONObject ext = JSON.parseObject(userDO.getExt());
-            user.setGithubUser(ext.getJSONObject(EXT_KET_GITHUB_USER));
+            try {
+                JsonNode ext = objectMapper.readTree(userDO.getExt());
+                JsonNode githubUserNode = ext.get(EXT_KET_GITHUB_USER);
+                if (githubUserNode != null) {
+                    user.setGithubUser(githubUserNode);
+                }
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to parse ext JSON", e);
+            }
         }
 
         user.setId(userDO.getId());
