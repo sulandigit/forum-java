@@ -201,9 +201,9 @@ public class DbCacheServiceImpl implements CacheService {
 
     /**
      * 定时清理过期缓存并持久化
-     * 每5秒执行一次
+     * 每60秒执行一次
      */
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/60 * * * * ?")
     public void task() {
         try {
             // 清理过期缓存
