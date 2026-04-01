@@ -20,4 +20,7 @@ public class FileUploadImgRequest implements Serializable {
 
     private byte[] base64;
     private String fileName;
+    private String originalFileName;
+    private Long fileSize;
+    private String contentType;
 }
