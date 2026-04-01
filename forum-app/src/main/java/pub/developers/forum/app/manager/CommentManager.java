@@ -78,28 +78,28 @@ public class CommentManager {
     }
 
     public PageResponseModel<CommentPageResponse> page(PageRequestModel<Long> pageRequest) {
-        PageResult<Comment> pageResult = commentRepository.page(pageRequest.getPageNo(), pageRequest.getPageSize(), pageRequest.getFilter());
+        PageResult<Pair<List<Comment>, List<User>>> pageResult = 
+            commentRepository.pageWithUser(pageRequest.getPageNo(), pageRequest.getPageSize(), pageRequest.getFilter());
 
-        if (ObjectUtils.isEmpty(pageResult.getList())) {
+        if (pageResult.isEmpty()) {
             return PageResponseModel.build(pageResult.getTotal(), pageResult.getSize(), new ArrayList<>());
         }
 
-        List<User> users = userRepository.queryByIds(pageResult.getList().stream()
-                .map(Comment::getUserId)
-                .collect(Collectors.toList()));
+        List<Comment> comments = pageResult.getList().getKey();
+        List<User> users = pageResult.getList().getValue();
 
-        List<CommentPageResponse> responses = CommentTransfer.toCommentPageResponses(pageResult.getList(), users, false);
+        List<CommentPageResponse> responses = CommentTransfer.toCommentPageResponses(comments, users, false);
 
-        List<Comment> replies = commentRepository.queryInReplyIds(pageResult.getList().stream()
-                .map(Comment::getId)
-                .collect(Collectors.toSet()));
+        Pair<List<Comment>, List<User>> replyPair = commentRepository.queryInReplyIdsWithUser(
+            comments.stream().map(Comment::getId).collect(Collectors.toSet())
+        );
+
+        List<Comment> replies = replyPair.getKey();
         if (ObjectUtils.isEmpty(replies)) {
             return PageResponseModel.build(pageResult.getTotal(), pageResult.getSize(), responses);
         }
 
-        List<User> replyUsers = userRepository.queryByIds(replies.stream()
-                .map(Comment::getUserId)
-                .collect(Collectors.toList()));
+        List<User> replyUsers = replyPair.getValue();
         List<CommentPageResponse> replyComments = CommentTransfer.toCommentPageResponses(replies, replyUsers, true);
         responses.forEach(response -> {
             response.setReplies(replyComments.stream().filter(replyComment ->
