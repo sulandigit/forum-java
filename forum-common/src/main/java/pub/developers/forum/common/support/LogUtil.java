@@ -3,38 +3,62 @@ package pub.developers.forum.common.support;
 import org.slf4j.Logger;
 import org.slf4j.helpers.MessageFormatter;
 
-/**
- * @author Qiangqiang.Bian
- * @create 2020/10/30
- * @desc
- **/
 public class LogUtil {
 
-    public static void info(Logger logger, String format, Object... args) {
-        logger.info(getMsg(format, args));
-    }
+    private static final String TRACE_ID_PREFIX = "[traceId-";
+    private static final String TRACE_ID_SUFFIX = "] - ";
 
-    public static void info(Logger logger, String msg) {
-        logger.info(getMsg(msg));
+    public static void info(Logger logger, String format, Object... args) {
+        if (logger.isInfoEnabled()) {
+            logger.info(getMsg(format, args));
+        }
     }
 
     public static void info(Logger logger, Throwable throwable, String format, Object... args) {
-        logger.info(getMsg(format, args), throwable);
+        if (logger.isInfoEnabled()) {
+            logger.info(getMsg(format, args), throwable);
+        }
     }
 
-    public static void info(Logger logger, String msg, Throwable throwable) {
-        logger.info(getMsg(msg), throwable);
+    public static void warn(Logger logger, String format, Object... args) {
+        if (logger.isWarnEnabled()) {
+            logger.warn(getMsg(format, args));
+        }
+    }
+
+    public static void warn(Logger logger, Throwable throwable, String format, Object... args) {
+        if (logger.isWarnEnabled()) {
+            logger.warn(getMsg(format, args), throwable);
+        }
+    }
+
+    public static void error(Logger logger, String format, Object... args) {
+        if (logger.isErrorEnabled()) {
+            logger.error(getMsg(format, args));
+        }
+    }
+
+    public static void error(Logger logger, Throwable throwable, String format, Object... args) {
+        if (logger.isErrorEnabled()) {
+            logger.error(getMsg(format, args), throwable);
+        }
+    }
+
+    public static void debug(Logger logger, String format, Object... args) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(getMsg(format, args));
+        }
     }
 
     private static String getMsg(String format, Object... arguments) {
-        StringBuilder sb = new StringBuilder()
-                .append("[traceId-")
-                .append(RequestContext.getTraceId())
-                .append("] - ");
+        StringBuilder sb = new StringBuilder(256);
+        sb.append(TRACE_ID_PREFIX)
+          .append(RequestContext.getTraceId())
+          .append(TRACE_ID_SUFFIX);
 
-        if (null != arguments && arguments.length > 0) {
+        if (arguments != null && arguments.length > 0) {
             sb.append(MessageFormatter.arrayFormat(format, arguments).getMessage());
-        }else{
+        } else {
             sb.append(format);
         }
 
