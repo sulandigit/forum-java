@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞树</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #0a1929, #1a3a52);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .tree-container {
+            position: relative;
+        }
+
+        .tree {
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .star {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 50px solid #ffd700;
+            position: relative;
+            margin: 0 auto 10px;
+            filter: drop-shadow(0 0 20px #ffd700);
+            animation: twinkle 2s infinite;
+        }
+
+        .star:after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-top: 50px solid #ffd700;
+            position: absolute;
+            top: 20px;
+            left: -30px;
+        }
+
+        .layer {
+            width: 0;
+            height: 0;
+            margin: 0 auto;
+            border-style: solid;
+        }
+
+        .layer1 {
+            border-width: 0 60px 80px 60px;
+            border-color: transparent transparent #0d5f3a transparent;
+            margin-bottom: -10px;
+        }
+
+        .layer2 {
+            border-width: 0 80px 100px 80px;
+            border-color: transparent transparent #0f7345 transparent;
+            margin-bottom: -10px;
+        }
+
+        .layer3 {
+            border-width: 0 100px 120px 100px;
+            border-color: transparent transparent #0d5f3a transparent;
+            margin-bottom: -10px;
+        }
+
+        .layer4 {
+            border-width: 0 120px 140px 120px;
+            border-color: transparent transparent #0f7345 transparent;
+        }
+
+        .trunk {
+            width: 60px;
+            height: 80px;
+            background: #6b4423;
+            margin: 0 auto;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .ornament {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .red { background: #ff0000; box-shadow: 0 0 10px #ff0000; }
+        .gold { background: #ffd700; box-shadow: 0 0 10px #ffd700; }
+        .blue { background: #0066ff; box-shadow: 0 0 10px #0066ff; }
+        .silver { background: #c0c0c0; box-shadow: 0 0 10px #c0c0c0; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1em;
+            top: -10%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .message {
+            text-align: center;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 28px;
+            margin-top: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tree-container">
+        <div class="tree">
+            <div class="star"></div>
+            <div class="layer layer1"></div>
+            <div class="layer layer2"></div>
+            <div class="layer layer3"></div>
+            <div class="layer layer4"></div>
+            <div class="trunk"></div>
+            
+            <div class="ornament red" style="top: 120px; left: 50%;"></div>
+            <div class="ornament gold" style="top: 150px; left: 40%;"></div>
+            <div class="ornament blue" style="top: 180px; left: 60%;"></div>
+            <div class="ornament silver" style="top: 210px; left: 35%;"></div>
+            <div class="ornament red" style="top: 240px; left: 65%;"></div>
+            <div class="ornament gold" style="top: 270px; left: 30%;"></div>
+            <div class="ornament blue" style="top: 300px; left: 70%;"></div>
+            <div class="ornament silver" style="top: 330px; left: 45%;"></div>
+        </div>
+        <div class="message">🎄 圣诞快乐 🎄</div>
+    </div>
+
+    <script>
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 5 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            document.body.appendChild(snowflake);
+
+            setTimeout(() => {
+                snowflake.remove();
+            }, 8000);
+        }
+
+        setInterval(createSnowflake, 200);
+    </script>
+</body>
+</html>
