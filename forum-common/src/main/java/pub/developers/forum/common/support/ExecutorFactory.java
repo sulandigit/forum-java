@@ -5,39 +5,51 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 
-/**
- * @author Qiangqiang.Bian
- * @create 2020/10/22
- * @desc
- **/
 @Slf4j
 public class ExecutorFactory {
 
+    private static final int DEFAULT_QUEUE_CAPACITY = 512;
+    private static final long KEEP_ALIVE_TIME = 0L;
+
+    private ExecutorFactory() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static ExecutorService getExecutorService(Class<?> cls, int fixedThreads) {
-        return new ThreadPoolExecutor(fixedThreads, fixedThreads,
-                0L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(512),
+        if (cls == null) {
+            throw new IllegalArgumentException("Class cannot be null");
+        }
+        if (fixedThreads <= 0) {
+            throw new IllegalArgumentException("Thread count must be positive");
+        }
+
+        return new ThreadPoolExecutor(
+                fixedThreads,
+                fixedThreads,
+                KEEP_ALIVE_TIME,
+                TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(DEFAULT_QUEUE_CAPACITY),
                 new ThreadFactoryBuilder()
                         .setNameFormat(cls.getSimpleName() + "-%d")
-                        .setUncaughtExceptionHandler(ExecutorFactory.getCommonHandler())
+                        .setUncaughtExceptionHandler(getCommonHandler())
                         .setDaemon(false)
                         .build(),
-                new ThreadPoolExecutor.AbortPolicy());
+                new ThreadPoolExecutor.AbortPolicy()
+        );
     }
 
     private static Thread.UncaughtExceptionHandler getCommonHandler() {
         return (t, ex) -> {
-            log.error("GroupName:[{}], ThreadName:[{}]. "
-                    , t.getThreadGroup().getName()
-                    , t.getName());
+            ThreadGroup threadGroup = t.getThreadGroup();
+            if (threadGroup != null) {
+                log.error("GroupName:[{}], ThreadName:[{}]", threadGroup.getName(), t.getName());
+            } else {
+                log.error("ThreadName:[{}]", t.getName());
+            }
+
             if (ex != null) {
-                log.error("Cause:[{}], Message:[{}]. "
-                        , ex.getCause()
-                        , ex.getMessage()
-                        , ex);
+                log.error("Cause:[{}], Message:[{}]", ex.getCause(), ex.getMessage(), ex);
             }
         };
     }
-
 }
-
