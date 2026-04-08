@@ -9,9 +9,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * Configuration Response
+ * Response object for returning system configuration information
+ *
  * @author Qiangqiang.Bian
  * @create 2020/12/26
- * @desc
  **/
 @Data
 @Builder
@@ -21,24 +23,54 @@ public class ConfigResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Configuration ID
+     */
     private Long id;
 
+    /**
+     * Configuration state
+     */
     private String state;
 
+    /**
+     * Configuration type
+     */
     private String type;
 
+    /**
+     * Configuration name
+     */
     private String name;
 
+    /**
+     * Configuration content
+     */
     private String content;
 
+    /**
+     * Effective start time
+     */
     private Date startAt;
 
+    /**
+     * Effective end time
+     */
     private Date endAt;
 
+    /**
+     * Creator user ID
+     */
     private Long creator;
 
+    /**
+     * Creation time
+     */
     private Date createAt;
 
+    /**
+     * Update time
+     */
     private Date updateAt;
 
 }
